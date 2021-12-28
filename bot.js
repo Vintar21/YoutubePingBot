@@ -43,17 +43,14 @@ client.on("ready", () => {
  * @param {string} rssURL The rss url to call to get the videos of the youtuber
  * @returns The last video of the youtuber
  */
-async function getLastVideos(youtubeChannelName, rssURL){
-    console.log(`[${youtubeChannelName}]  | Getting videos...`);
+async function getLastVideos(rssURL){
     let content = await parser.parseURL(rssURL);
-    console.log(`[${youtubeChannelName}]  | ${content.items.length} videos found`);
     let tLastVideos = content.items.sort((a, b) => {
         let aPubDate = new Date(a.pubDate || 0).getTime();
         let bPubDate = new Date(b.pubDate || 0).getTime();
         return aPubDate - bPubDate;
     });
     tLastVideos = tLastVideos.filter((video) => new Date(video.pubDate || 0).getTime() > lastMessage);
-    console.log(`[${youtubeChannelName}]  | There are "${tLastVideos ? tLastVideos.length : "err"}" new videos`);
     return tLastVideos;
 }
 
@@ -65,9 +62,11 @@ async function getLastVideos(youtubeChannelName, rssURL){
  */
  async function checkVideos(youtubeChannelName, rssURL){
     console.log(`[${youtubeChannelName}] | Get the last video..`);
-    let lastVideos = await getLastVideos(youtubeChannelName, rssURL);
-    // If there isn't any video in the youtube channel, return
+    let lastVideos = await getLastVideos(rssURL);
     if(lastVideos.length === 0) return console.log( `[${youtubeChannelName}] | No new video found`);
+    if(lastVideos.length === 1) return console.log( `[${youtubeChannelName}] | A new video was found`);
+    if(lastVideos.length > 1) return console.log( `[${youtubeChannelName}] | ${lastVideos.length} new videos were found`);
+
     return lastVideos;
 }
 
@@ -119,13 +118,12 @@ async function getYoutubeChannelInfos(name){
         const youtuber = commandHandler.url;
         console.log(`[${youtuber.length >= 10 ? youtuber.slice(0, 10)+"..." : youtuber}] | Start checking...`);
         let channelInfos = await getYoutubeChannelInfos(youtuber);
-        if(!channelInfos) return console.log("[ERR] | Invalid youtuber provided: "+youtuber);
+        if(!channelInfos) return console.log("[ERR] | Invalid youtuber provided: "+ youtuber);
         client.user.setActivity(`${channelInfos.raw.snippet.title}'s YouTube channel`, {
             type: 'WATCHING'
         });
-        let videos = await checkVideos(channelInfos.raw.snippet.title, "https://www.youtube.com/feeds/videos.xml?channel_id="+channelInfos.id);
+        let videos = await checkVideos(channelInfos.raw.snippet.title, "https://www.youtube.com/feeds/videos.xml?channel_id=" + channelInfos.id);
         if(!videos || videos?.length === 0) {
-            console.log(`[${channelInfos.raw.snippet.title}] | No notification`);
             return;
         } 
         // before client.channels.cache.get(config.channel);
