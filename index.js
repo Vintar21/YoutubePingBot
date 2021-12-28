@@ -18,10 +18,10 @@ client.on('message', (message) => {
     commandHandler.handleMessage(message);
   });
   
-  client.on('error', (e) => {
-    UsersManager.exportStats();
-    console.error('Discord client error!', e);
-  });
+client.on('error', (e) => {
+UsersManager.exportStats();
+console.error('Discord client error!', e);
+});
   
 client.on("ready", () => {
     console.log(`[!] Ready to listen youtuber!`);
@@ -112,6 +112,9 @@ async function getYoutubeChannelInfos(name){
         console.log(`[${youtuber.length >= 10 ? youtuber.slice(0, 10)+"..." : youtuber}] | Start checking...`);
         let channelInfos = await getYoutubeChannelInfos(youtuber);
         if(!channelInfos) return console.log("[ERR] | Invalid youtuber provided: "+youtuber);
+        client.user.setActivity(`${channelInfos.raw.snippet.title}'s YouTube channel`, {
+            type: 'WATCHING'
+        });
         let videos = await checkVideos(channelInfos.raw.snippet.title, "https://www.youtube.com/feeds/videos.xml?channel_id="+channelInfos.id);
         if(!videos || videos?.length === 0) {
             console.log(`[${channelInfos.raw.snippet.title}] | No notification`);

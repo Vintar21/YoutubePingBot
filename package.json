@@ -1,10 +1,10 @@
 {
-  "name": "discordyoutubenotifier",
-  "version": "1.0.0",
+  "name": "youtube-ping-bot",
+  "version": "2.0.0",
   "description": "Be notified when one of your favorite youtubers posts a video! ",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node bot.js"
   },
   "repository": {
     "type": "git",
