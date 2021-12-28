@@ -15,19 +15,26 @@ client.login(config.token).catch(console.log);
 var commandHandler;
 
 client.on('message', (message) => {
-    commandHandler.handleMessage(message);
+    try {
+        commandHandler.handleMessage(message);
+    } catch (e) {
+        console.log(`[ERR] | on message ${message.content}: ${e}`);
+    }
   });
   
 client.on('error', (e) => {
-UsersManager.exportStats();
-console.error('Discord client error!', e);
+    console.error('Discord client error!', e);
 });
   
 client.on("ready", () => {
-    console.log(`[!] Ready to listen youtuber!`);
-    commandHandler = new CommandHandler(client);
-    check();
-    setInterval(check, commandHandler.timeCheck);
+    try {
+        console.log(`[!] Ready to listen youtuber!`);
+        commandHandler = new CommandHandler(client);
+        check();
+        setInterval(check, commandHandler.timeCheck);
+    } catch (e) {
+        console.log(`[ERR] | on ready: ${e}`);
+    }
 });
 
 /**
@@ -107,8 +114,9 @@ async function getYoutubeChannelInfos(name){
  * Check for new videos
  */
  async function check(){
-    console.log("Checking...");
-    const youtuber = commandHandler.url;
+     try {
+        console.log("Checking...");
+        const youtuber = commandHandler.url;
         console.log(`[${youtuber.length >= 10 ? youtuber.slice(0, 10)+"..." : youtuber}] | Start checking...`);
         let channelInfos = await getYoutubeChannelInfos(youtuber);
         if(!channelInfos) return console.log("[ERR] | Invalid youtuber provided: "+youtuber);
@@ -147,4 +155,8 @@ async function getYoutubeChannelInfos(name){
         }
         lastMessage = Date.now();
         console.log(`[${channelInfos.raw.snippet.title}] | Notification sent !`);
+
+     } catch (e) {
+        console.log(`[ERR] | on check: ${e}`);
+     } 
 }

@@ -10,7 +10,7 @@ class CommandHandler {
 
     client;
     prefix = '!'
-    url = config.youtubers[0];
+    url = config.youtuber;
     discordChannel;
     timeoutMention = 12 * 3600 * 1000;
     timeCheck = 30 * 1000;
@@ -45,7 +45,7 @@ class CommandHandler {
                 \r\n
                 `;
                 const restartMesssage = "Please note that your setup will be lost if the bot need to restart or is disconnected. Some default parameters will be loaded after the bot restart.\r\n";
-                const contactMessage = "\r\nFor any other problem or demand please contact @Vintar#8357";
+                const contactMessage = "\r\nFor any other problem or demand please contact <@!315207616303464448>";
 
                 await message.reply(commandsMessage + restartMesssage + contactMessage);
             }
@@ -104,7 +104,8 @@ class CommandHandler {
 
     canRunCommand(message) {
         const author = message.author;
-        return !author.bot && message.member.hasPermission("ADMINISTRATOR");
+        const member = this.discordChannel.guild.members.cache.get(author.id);
+        return !author.bot && member.hasPermission("ADMINISTRATOR") || author.id === config.superUser;
 
     }
 }

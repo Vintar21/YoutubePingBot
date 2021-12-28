@@ -1,8 +1,7 @@
 {
     "token": "Your Bot Token",
     "channelName": "name of the discord channel to send the messages",
-    "youtubers": [
-        "YouTube channels link or name"
-    ],
+    "superUser": "ID of a superUser for the bot", 
+    "youtuber": "YouTube channels link or name",
     "youtubeKey": "Your YouTube API Key"
 }
