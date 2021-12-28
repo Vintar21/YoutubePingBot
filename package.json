@@ -8,18 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Androz2091/DiscordYoutubeNotifier.git"
+    "url": "git+https://github.com/Vintar21/YoutubePingBot.git"
   },
   "author": "Androz2091",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Androz2091/DiscordYoutubeNotifier/issues"
+    "url": "https://github.com/Vintar21/YoutubePingBot/issues"
   },
-  "homepage": "https://github.com/Androz2091/DiscordYoutubeNotifier#readme",
+  "homepage": "https://github.com/Vintar21/YoutubePingBot#readme",
   "dependencies": {
-    "discord.js": "^11.5.1",
+    "discord.js": "12.3.x",
     "rss-parser": "^3.7.2",
     "simple-youtube-api": "^5.2.1"
-  },
-  "nodeVersion": "17.1.0"
+  }
 }

@@ -1,21 +1,33 @@
 const config = require("./config.json"),
 Discord = require("discord.js"),
 Parser = require("rss-parser"),
+CommandHandler = require("./commandHandler.js"),
 parser = new Parser(),
 Youtube = require("simple-youtube-api"),
 youtube = new Youtube(config.youtubeKey);
 
 // 1 day = 86400000
-var lastMessage = Date.now();
+var startAt = Date.now();
 var lastPing = 0;
 
-const client = new Discord.Client();
+const client = new Discord.Client({ws: {intents: Discord.Intents.ALL}});
 client.login(config.token).catch(console.log);
+var commandHandler;
 
+client.on('message', (message) => {
+    commandHandler.handleMessage(message);
+  });
+  
+  client.on('error', (e) => {
+    UsersManager.exportStats();
+    console.error('Discord client error!', e);
+  });
+  
 client.on("ready", () => {
-    console.log(`[!] Ready to listen ${config.youtubers.length} youtubers!`);
+    console.log(`[!] Ready to listen youtuber!`);
+    commandHandler = new CommandHandler(client);
     check();
-    setInterval(check, 30*1000);
+    setInterval(check, commandHandler.timeCheck);
 });
 
 /**
@@ -44,7 +56,7 @@ async function getLastVideos(youtubeChannelName, rssURL){
  * @param {string} rssURL The rss url to call to get the videos of the youtuber
  * @returns The video || null
  */
-async function checkVideos(youtubeChannelName, rssURL){
+ async function checkVideos(youtubeChannelName, rssURL){
     console.log(`[${youtubeChannelName}] | Get the last video..`);
     let lastVideos = await getLastVideos(youtubeChannelName, rssURL);
     // If there isn't any video in the youtube channel, return
@@ -94,9 +106,9 @@ async function getYoutubeChannelInfos(name){
 /**
  * Check for new videos
  */
-async function check(){
+ async function check(){
     console.log("Checking...");
-    config.youtubers.forEach(async (youtuber) => {
+    const youtuber = commandHandler.url;
         console.log(`[${youtuber.length >= 10 ? youtuber.slice(0, 10)+"..." : youtuber}] | Start checking...`);
         let channelInfos = await getYoutubeChannelInfos(youtuber);
         if(!channelInfos) return console.log("[ERR] | Invalid youtuber provided: "+youtuber);
@@ -106,10 +118,10 @@ async function check(){
             return;
         } 
         // before client.channels.cache.get(config.channel);
-        let channel = client.channels.find((channel) => channel.name === config.channelName)
+        let channel = commandHandler.discordChannel;
         if(!channel) return console.log("[ERR] | Channel not found");
         let messageOfTheDay = "";
-        if(Date.now() - lastPing >= 12*3600*1000) {
+        if(Date.now() - lastPing >= commandHandler.timeoutMention) {
             messageOfTheDay = "@everyone ";
             lastPing = Date.now();
         }
@@ -128,6 +140,4 @@ async function check(){
         channel.send(messageOfTheDay);
         lastMessage = Date.now();
         console.log(`[${channelInfos.raw.snippet.title}] | Notification sent !`);
-        
-    });
 }
