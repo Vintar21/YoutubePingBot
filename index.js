@@ -120,24 +120,28 @@ async function getYoutubeChannelInfos(name){
         // before client.channels.cache.get(config.channel);
         let channel = commandHandler.discordChannel;
         if(!channel) return console.log("[ERR] | Channel not found");
-        let messageOfTheDay = "";
+        let ping = "";
         if(Date.now() - lastPing >= commandHandler.timeoutMention) {
-            messageOfTheDay = "@everyone ";
+            ping = "@everyone ";
             lastPing = Date.now();
         }
+
         if (videos.length === 1) {
-            messageOfTheDay += `J'ai sorti une nouvelle vidéo: \r\n`;
+            channel.send(ping + commandHandler.singleVideoMessage
+            .replace("{videoURL}", videos[0].link)
+            .replace("{videoTitle}", videos[0].title));
         } else {
-            messageOfTheDay += `J'ai sorti ${videos.length} nouvelles vidéos: \r\n`;
+            let messageToSend = commandHandler.multipleVideosMessage.replace("{number}", videos.length);
+            videos.forEach((video) => {
+                messageToSend = messageToSend
+                .replace(/([^\n]*(\{videoURL\}|\{videoTitle\})[^\n]*)/, '$1\r\n$1')
+                .replace("{videoURL}", video.link)
+                .replace("{videoTitle}", video.title);
+            });
+            messageToSend = messageToSend.replace(/(\r\n[^\n]*(\{videoURL\}|\{videoTitle\})[^\n]*)/, '');
+            channel.send(ping + messageToSend);
+            console.log(ping + messageToSend);
         }
-        videos.forEach((video) => {
-            messageOfTheDay += config.message
-            .replace("{videoURL}", video.link)
-            .replace("{videoTitle}", video.title)
-            messageOfTheDay += "\r\n";
-        });
-        messageOfTheDay += "N'oublie pas de mettre un petit pouce bleu pour me soutenir ❤";
-        channel.send(messageOfTheDay);
         lastMessage = Date.now();
         console.log(`[${channelInfos.raw.snippet.title}] | Notification sent !`);
 }

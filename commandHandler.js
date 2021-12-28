@@ -14,6 +14,17 @@ class CommandHandler {
     discordChannel;
     timeoutMention = 12 * 3600 * 1000;
     timeCheck = 30 * 1000;
+    singleVideoMessage = `
+    J'ai sorti une nouvelle vidéo: **{videoTitle}**
+    {videoURL}
+
+    N'oublie pas de mettre un petit pouce bleu pour me soutenir ❤`;
+
+    multipleVideosMessage = `
+    J'ai sorti {number} nouvelles vidéos:
+    - **{videoTitle}**: {videoURL}
+    
+    N'oublie pas de mettre un petit pouce bleu pour me soutenir ❤`
 
     /** Executes user commands contained in a message if appropriate. */
     async handleMessage(message) {
@@ -22,11 +33,16 @@ class CommandHandler {
             if(message.content.startsWith(`${this.prefix}help`)) {
                 const commandsMessage = 
                 `\r\n__**Commands**__\r\n
-                -**${this.prefix}help**: Display this help
-                -**${this.prefix}channel** *your youtube channel url*: Set the youtube channel to watch
-                -**${this.prefix}mention** *number of hours*: Set the interval of time in hours between two mention to "everyone" in message. You can use 0.5 for 30 minutes
-                -**${this.prefix}prefix** *new prefix*: Set a new prefix for this discord bot
-                -**${this.prefix}settings**: Display the current settings of the bot\r\n
+                -**${this.prefix}help**\n> Display this help message
+                -**${this.prefix}channel** *your discord channel mention*\n> Set the discord channel where the bot will send the messages (the bot should be able to see it and send messages in the channel)
+                -**${this.prefix}mention** *number of hours*\n> Set the interval of time in hours between two mention to "everyone" in message. You can use 0.5 for 30 minutes
+                -**${this.prefix}message** *parametered message for a single video*\n> Set the message the bot has to display when only one new video is found. Use "{videoURL}" and "{videoTitle}" as parameter that will be replaced by the actual video URL and title
+                -**${this.prefix}messageOne** *parametered message for a single video*\n> Same as ${this.prefix}message
+                -**${this.prefix}messageSeveral** *parametered message for several videos*\n> Set the message the bot has to display when several new videos are found. Use "{number}" "{videoURL}" and "{videoTitle}" as parameter that will be replaced by the number of videos, their URLs and titles **Caution** lines that contains {videoURL} and {videoTitle} will be repeated for each videos!
+                -**${this.prefix}prefix** *new prefix*\n> Set a new prefix for this discord bot
+                -**${this.prefix}settings**\n> Display the current settings of the bot
+                -**${this.prefix}url** *your youtube channel url*\n> Set the youtube channel to watch
+                \r\n
                 `;
                 const restartMesssage = "Please note that your setup will be lost if the bot need to restart or is disconnected. Some default parameters will be loaded after the bot restart.\r\n";
                 const contactMessage = "\r\nFor any other problem or demand please contact @Vintar#8357";
@@ -55,6 +71,18 @@ class CommandHandler {
             if (message.content.startsWith(`${this.prefix}mention `)) {
                 this.timeoutMention = Number(message.content.replace( `${this.prefix}mention `, ''))* 3600 * 1000;
                 await message.reply(`I will now mention user maximum one time each ${this.timeoutMention/3600000} hours`);
+            }
+
+            if (message.content.startsWith(`${this.prefix}message `) || message.content.startsWith(`${this.prefix}messageOne `)) {
+                this.singleVideoMessage = message.content.replace( `${this.prefix}message `, '').replace( `${this.prefix}messageOne `, '');
+                await message.reply(`My message when a video will be published is now: ${this.singleVideoMessage}
+                Make sure you have used parameters like {videoURL} and {videoTitle} (with braces). See ${this.prefix}help for more details.`);
+            }
+
+            if (message.content.startsWith(`${this.prefix}messageSeveral `)) {
+                this.multipleVideoMessage = message.content.replace( `${this.prefix}messageSeveral `, '');
+                await message.reply(`My message when several videos will be published is now: ${this.multipleVideosMessage}
+                Make sure you have used parameters like {number}, {videoURL} and {videoTitle} (with braces). See ${this.prefix}help for more details.`);
             }
 
             if (message.content.startsWith(`${this.prefix}prefix `)) {

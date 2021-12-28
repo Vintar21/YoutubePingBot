@@ -1,6 +1,5 @@
 {
     "token": "Your Bot Token",
-    "message": "> **{videoTitle}**: {videoURL}",
     "channelName": "name of the discord channel to send the messages",
     "youtubers": [
         "YouTube channels link or name"
