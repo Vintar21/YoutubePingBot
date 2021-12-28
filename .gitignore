@@ -3,6 +3,7 @@ logs
 
 # Nuxt.js build / generate output
 dist
+node_modules
 
 # Config
 config.json

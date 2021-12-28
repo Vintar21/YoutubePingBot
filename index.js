@@ -7,7 +7,7 @@ Youtube = require("simple-youtube-api"),
 youtube = new Youtube(config.youtubeKey);
 
 // 1 day = 86400000
-var startAt = Date.now();
+var lastMessage = Date.now();
 var lastPing = 0;
 
 const client = new Discord.Client({ws: {intents: Discord.Intents.ALL}});
