@@ -5,13 +5,15 @@ class CommandHandler {
     constructor(client) {
         this.client = client;
         const channels = client.channels;
-        this.discordChannel = channels.cache.find((channel) => channel.name === config.channelName && channel.type === 'text');
+        this.discordChannel = channels.cache.get(config.channelId);
+        this.discordMembers = this.discordChannel.guild.members;
     }
 
     client;
     prefix = '!'
     url = config.youtuber;
     discordChannel;
+    discordMembers;
     timeoutMention = 12 * 3600 * 1000;
     timeCheck = 30 * 1000;
     singleVideoMessage = `
@@ -104,7 +106,7 @@ class CommandHandler {
 
     canRunCommand(message) {
         const author = message.author;
-        const member = this.discordChannel.guild.members.cache.get(author.id);
+        const member = this.discordMembers.cache.get(author.id);
         return !author.bot && member.hasPermission("ADMINISTRATOR") || author.id === config.superUser;
 
     }
