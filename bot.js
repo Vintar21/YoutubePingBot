@@ -64,8 +64,12 @@ async function getLastVideos(rssURL){
     console.log(`[${youtubeChannelName}] | Get the last video..`);
     let lastVideos = await getLastVideos(rssURL);
     if(lastVideos.length === 0) return console.log( `[${youtubeChannelName}] | No new video found`);
-    if(lastVideos.length === 1) return console.log( `[${youtubeChannelName}] | A new video was found`);
-    if(lastVideos.length > 1) return console.log( `[${youtubeChannelName}] | ${lastVideos.length} new videos were found`);
+    if(lastVideos.length === 1) {
+        console.log( `[${youtubeChannelName}] | A new video was found`);
+    } 
+    else if(lastVideos.length > 1) {
+        console.log( `[${youtubeChannelName}] | ${lastVideos.length} new videos were found`);
+    } 
 
     return lastVideos;
 }
@@ -149,7 +153,6 @@ async function getYoutubeChannelInfos(name){
             });
             messageToSend = messageToSend.replace(/(\r\n[^\n]*(\{videoURL\}|\{videoTitle\})[^\n]*)/, '');
             channel.send(ping + messageToSend);
-            console.log(ping + messageToSend);
         }
         lastMessage = Date.now();
         console.log(`[${channelInfos.raw.snippet.title}] | Notification sent !`);
